@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Smart Home ESP32</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<style>
+body {
+  background: #0f172a;
+  color: white;
+  text-align: center;
+  font-family: Arial;
+}
+
+h1 {
+  margin-top: 20px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 20px;
+  padding: 25px;
+  width: 200px;
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 15px;
+  font-size: 18px;
+  color: white;
+  cursor: pointer;
+}
+
+.on { background: #22c55e; }
+.off { background: #ef4444; }
+.auto { background: #3b82f6; }
+
+button:active {
+  transform: scale(0.95);
+}
+
+.status {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🏠 Smart Home ESP32</h1>
+
+<div class="container">
+  <div class="card">
+    <i class="fas fa-lightbulb fa-3x"></i>
+    <h3>Đèn</h3>
+
+    <button class="on" onclick="send('on')">BẬT</button>
+    <button class="off" onclick="send('off')">TẮT</button>
+    <button class="auto" onclick="send('auto')">AUTO</button>
+
+    <div class="status" id="status">Trạng thái: ---</div>
+  </div>
+</div>
+
+<script>
+const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+
+client.on('connect', () => {
+  console.log("Đã kết nối MQTT");
+  client.subscribe('esp32/status');
+});
+
+client.on('message', (topic, message) => {
+  document.getElementById("status").innerText = "Trạng thái: " + message.toString();
+});
+
+function send(msg) {
+  client.publish('esp32/smarthome', msg);
+}
+</script>
+
+</body>
+</html>
